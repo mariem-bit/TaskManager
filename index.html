@@ -4,81 +4,37 @@
   <meta charset="UTF-8">
   <title>Task Manager — IHEC Carthage</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: Arial; background: linear-gradient(135deg, #1F4E79, #2E75B6); min-height: 100vh; padding: 40px; }
-    .container { max-width: 600px; margin: auto; background: white; border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-    h1 { color: #1F4E79; text-align: center; margin-bottom: 10px; }
-    .subtitle { text-align: center; color: #888; margin-bottom: 25px; font-size: 14px; }
-    .input-area { display: flex; gap: 10px; margin-bottom: 20px; }
-    input { flex: 1; padding: 12px; border: 2px solid #2E75B6; border-radius: 8px; font-size: 16px; outline: none; }
-    .btn-add { padding: 12px 20px; background: #2E75B6; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; }
-    .btn-add:hover { background: #1F4E79; }
-    .stats { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px; color: #555; }
-    .stats span { background: #EBF3FB; padding: 5px 12px; border-radius: 20px; }
-    ul { list-style: none; }
-    li { display: flex; align-items: center; justify-content: space-between; background: #f9f9f9; margin: 8px 0; padding: 12px 15px; border-radius: 8px; border-left: 4px solid #2E75B6; }
-    li.done { border-left-color: #28a745; background: #f0fff4; text-decoration: line-through; color: #888; }
-    .task-text { flex: 1; }
-    .btn-done { padding: 5px 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 8px; font-size: 12px; }
-    .btn-delete { padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; }
-    .empty { text-align: center; color: #aaa; padding: 20px; }
+    body { font-family: Arial; background: #f0f0f0; display: flex; justify-content: center; padding: 50px; }
+    .boite { background: white; padding: 30px; border-radius: 10px; width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    h1 { color: #1F4E79; text-align: center; }
+    input { width: 70%; padding: 10px; border: 2px solid #2E75B6; border-radius: 6px; font-size: 14px; }
+    button { padding: 10px 14px; background: #2E75B6; color: white; border: none; border-radius: 6px; cursor: pointer; }
+    button:hover { background: #1F4E79; }
+    ul { list-style: none; padding: 0; margin-top: 20px; }
+    li { background: #f9f9f9; padding: 10px; margin: 8px 0; border-left: 4px solid #2E75B6; border-radius: 6px; display: flex; justify-content: space-between; }
+    .supprimer { background: #dc3545; padding: 4px 10px; font-size: 12px; }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="boite">
     <h1>📋 Task Manager</h1>
-    <p class="subtitle">IHEC Carthage — Gestion de tâches</p>
-    <div class="input-area">
-      <input type="text" id="task" placeholder="Ajouter une nouvelle tâche..." />
-      <button class="btn-add" onclick="addTask()">➕ Ajouter</button>
+    <p style="text-align:center; color:#888;">IHEC Carthage</p>
+    <div style="display:flex; gap:8px; margin-bottom:10px;">
+      <input type="text" id="tache" placeholder="Écrire une tâche..." />
+      <button onclick="ajouter()">Ajouter</button>
     </div>
-    <div class="stats">
-      <span>Total : <strong id="total">0</strong></span>
-      <span>Terminées : <strong id="done">0</strong></span>
-      <span>En cours : <strong id="enCours">0</strong></span>
-    </div>
-    <ul id="liste">
-      <li class="empty" id="empty-msg">Aucune tâche pour le moment 😊</li>
-    </ul>
+    <ul id="liste"></ul>
   </div>
   <script>
-    let tasks = [];
-    function addTask() {
-      const val = document.getElementById('task').value.trim();
-      if (!val) return;
-      tasks.push({ text: val, done: false });
-      document.getElementById('task').value = '';
-      render();
+    function ajouter() {
+      const texte = document.getElementById('tache').value.trim();
+      if (texte === '') return;
+      const li = document.createElement('li');
+      li.innerHTML = `<span>${texte}</span><button class="supprimer" onclick="this.parentElement.remove()">Supprimer</button>`;
+      document.getElementById('liste').appendChild(li);
+      document.getElementById('tache').value = '';
     }
-    function toggleDone(i) {
-      tasks[i].done = !tasks[i].done;
-      render();
-    }
-    function deleteTask(i) {
-      tasks.splice(i, 1);
-      render();
-    }
-    function render() {
-      const liste = document.getElementById('liste');
-      liste.innerHTML = '';
-      if (tasks.length === 0) {
-        liste.innerHTML = '<li class="empty">Aucune tâche pour le moment 😊</li>';
-      } else {
-        tasks.forEach((t, i) => {
-          liste.innerHTML += `<li class="${t.done ? 'done' : ''}">
-            <span class="task-text">${t.text}</span>
-            <button class="btn-done" onclick="toggleDone(${i})">${t.done ? '↩️ Annuler' : '✅ Terminée'}</button>
-            <button class="btn-delete" onclick="deleteTask(${i})">🗑️ Supprimer</button>
-          </li>`;
-        });
-      }
-      document.getElementById('total').textContent = tasks.length;
-      document.getElementById('done').textContent = tasks.filter(t => t.done).length;
-      document.getElementById('enCours').textContent = tasks.filter(t => !t.done).length;
-    }
-    document.getElementById('task').addEventListener('keypress', e => {
-      if (e.key === 'Enter') addTask();
-    });
+    document.getElementById('tache').addEventListener('keypress', e => { if (e.key === 'Enter') ajouter(); });
   </script>
 </body>
 </html>
